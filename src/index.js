@@ -1,6 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
-var cors = require('cors')
+const cors = require('cors')
 const { UserRouter } = require('./routes/UserRoutes');
 const { ConfigRouter } = require('./routes/ConfigRoutes');
 const { ReportsRouter } = require('./routes/ReportsRoutes');
@@ -8,7 +8,7 @@ require('dotenv').config();
 require('./utils/config/Database');
 
 const app = express();
-app.set('port', process.env.PORT || 3000)
+app.set('port', process.env.PORT || 3000);
 
 app.use(express.json({limit: "50mb"}));
 app.use(cors());

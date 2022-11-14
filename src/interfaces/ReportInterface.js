@@ -2,11 +2,11 @@ const { Schema, model } = require('mongoose');
 
 const ReportSchema = new Schema({
     id: String,
-    iduser: String,
-    name: String,
+    suburb: String,
+    street: String,
     department: String,
     description: String,
-    status: String,
+    status: Number,
     photo: String,
     geolocation: {
         latitude: Number,
