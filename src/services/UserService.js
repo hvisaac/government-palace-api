@@ -1,6 +1,6 @@
 const UserInterface = require('../interfaces/UserInterface');
 
-const SignUp = async (req, res) => {
+const signUp = async (req, res) => {
 
     try {
         console.log("adding user");
@@ -13,7 +13,7 @@ const SignUp = async (req, res) => {
     }
 }
 
-const SignIn = async (req, res) => {
+const signIn = async (req, res) => {
     console.log("Signing user");
     UserInterface.find({ phone: req.body.phone, password: req.body.password }, (err, user) => {
         if (err) {
@@ -27,4 +27,4 @@ const SignIn = async (req, res) => {
     });
 }
 
-module.exports = { SignUp, SignIn };
+module.exports = { signUp, signIn };

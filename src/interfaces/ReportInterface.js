@@ -11,7 +11,10 @@ const ReportSchema = new Schema({
     geolocation: {
         latitude: Number,
         longitude: Number,
-    }
+    },
+    date: Date,
+}, {
+    timestamps: true
 });
 
 module.exports = model('reports', ReportSchema);

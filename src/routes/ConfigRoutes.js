@@ -1,9 +1,10 @@
 const express = require('express');
 const ConfigRouter = express.Router();
-const { AddDepartment, AddUserTyoe } = require('../services/ConfigService');
+const { addDepartment, addUserTyoe, getDepartments } = require('../services/ConfigService');
 
-ConfigRouter.post('/add-user-type', AddUserTyoe);
-ConfigRouter.post('/add-department', AddDepartment);
+ConfigRouter.post('/config/add-user-type', addUserTyoe);
+ConfigRouter.post('/config/add-department', addDepartment);
+ConfigRouter.get('/config/departments', getDepartments);
 
 
 module.exports = { ConfigRouter };

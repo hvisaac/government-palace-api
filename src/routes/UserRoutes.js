@@ -1,8 +1,8 @@
 const express = require('express');
 const UserRouter = express.Router();
-const { SignIn, SignUp } = require('../services/UserService');
+const { signIn, signUp } = require('../services/UserService');
 
-UserRouter.post('/sign-up', SignUp);
-UserRouter.post('/sign-in', SignIn);
+UserRouter.post('/sign-up', signUp);
+UserRouter.post('/sign-in', signIn);
 
 module.exports = { UserRouter };
