@@ -113,8 +113,16 @@ const getMyReports = async (req, res) => {
 
 const saveReport = async (req, res) => {
     const newReport = new ReportInterface(req.body);
-    await newReport.save();
-    return res.status(201).json("success");
+    await newReport.save((err, Object) => {
+        if (err) {
+            console.log("error -> " + error);
+            return res.status(500).json("internal error -> " + error);
+        }
+        else {
+            return res.status(201).json(Object);
+        }
+    });
+    
 }
 
 module.exports = { getMyReports, saveReport, getAllReports, countAllReports, getReportsByDate };
