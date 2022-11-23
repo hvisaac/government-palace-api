@@ -10,9 +10,9 @@ require('./utils/config/Database');
 const app = express();
 app.set('port', process.env.PORT || 3000);
 
-app.use(express.json({limit: "50mb"}));
+app.use(express.json({limit: "5000mb"}));
 app.use(cors());
-app.use(express.urlencoded({ extended: true, limit: "50mb"}));
+app.use(express.urlencoded({ extended: true, limit: "5000mb"}));
 app.use
     (
         UserRouter,
