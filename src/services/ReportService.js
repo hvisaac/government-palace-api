@@ -35,12 +35,13 @@ const getReportById = async (req, res) => {
 
 const getAllReports = async (req, res) => {
 
-    ReportInterface.find({}, async (err, reports) => {
+    ReportInterface.find({}, { photo: 0 }, async (err, reports) => {
         if (err) {
             console.log("error -> " + error);
             return res.status(500).json("internal error -> " + error);
         }
         else {
+            console.log(reports);
             let response = [];
 
             for (let i = 0; i < Object.keys(reports).length; i++) {
