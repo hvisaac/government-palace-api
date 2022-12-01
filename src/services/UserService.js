@@ -8,8 +8,8 @@ const signUp = async (req, res) => {
         await newUser.save();
         return res.status(201).json("success");
     } catch (error) {
-        console.log("error -> " + error);
-        return res.status(500).json("internal error -> " + error);
+        console.log("error -> " + err);
+        return res.status(500).json("internal error -> " + err);
     }
 }
 
@@ -17,8 +17,8 @@ const signIn = async (req, res) => {
     console.log("Signing user");
     UserInterface.find({ phone: req.body.phone, password: req.body.password }, (err, user) => {
         if (err) {
-            console.log("error -> " + error);
-            return res.status(500).json("internal error -> " + error);
+            console.log("error -> " + err);
+            return res.status(500).json("internal error -> " + err);
         }
         else {
             console.log(user);
