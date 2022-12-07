@@ -176,7 +176,7 @@ const countAllReports = async (req, res) => {
 
 const getMyReports = async (req, res) => {
 
-    ReportInterface.find({ department: req.params.department }, async (err, reports) => {
+    ReportInterface.find({ department: req.params.department }, { photo: 0 },async (err, reports) => {
         if (err) {
             console.log("error -> " + err);
             return res.status(500).json("internal error -> " + err);
