@@ -36,16 +36,27 @@ const getDepartments = async (req, res) => {
 
             for (let i = 0; i < Object.keys(departments).length; i++) {
                 await new Promise(next => {
-                    ReportInterface.countDocuments({ department: departments[i]._id }, (err, reports) => {
+                    ReportInterface.find({ department: departments[i]._id }, (err, reports) => {
                         if (!err) {
-
+                            let finishedsReports = 0;
+                            let workingReports = 0;
+                            for (const report of reports){
+                                if (report.status == 1) {
+                                    workingReports++; 
+                                }
+                                if (report.status == 2) {
+                                    finishedsReports++;
+                                }
+                            }
                             let auxDepartment = {
                                 _id: departments[i]._id,
                                 name: departments[i].name,
                                 color: departments[i].color,
                                 icon: departments[i].icon,
                                 href: departments[i].href,
-                                reports: reports,
+                                reports: reports.length,
+                                workingReports: workingReports,
+                                finishedsReports: finishedsReports
                             }
                             
                             response.push(auxDepartment);

@@ -1,6 +1,47 @@
 const ReportInterface = require('../interfaces/ReportInterface');
 const DepartmentInterface = require('../interfaces/DepartmentInterface');
 
+const confirmReport = async (req, res) => {
+    let exist = false;
+
+    let reports = new Promise((next) => {
+        ReportInterface.find({},
+            {
+                geolocation:
+                {
+                    latitude: {
+                        $gte: Number.parseFloat(req.body.lat2.substr(0, 4)),
+                        $lte: Number.parseFloat(req.body.lat2.substr(0, 4)) + 0.01
+                    },
+                    longitude: {
+                        $gte: Number.parseFloat(req.body.long2.substr(0, 5)),
+                        $lte: Number.parseFloat(req.body.long2.substr(0, 5)) + 0.01
+                    }
+                }
+            },
+            (err, docs) => {
+                if (err) { next(err) }
+                else { next(docs) }
+            })
+    });
+    
+    for (const report of reports) {
+        const R = 6371; //earth radio
+        const sumLat = report.latitude - req.body.lat1;
+        const sumLong = report.longitude - req.body.long1;
+        const a = Math.pow(Math.sin(sumLat / 2), 2) + (Math.cos(req.body.lat1) * Math.cos(report.latitude) * Math.pow(Math.sin(sumLong / 2), 2));
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const d = R * c;
+
+        if (d < 5) {
+            exist = true;
+            break;
+        }
+    }
+
+    return res.status(200).json(exist);
+}
+
 const getReportById = async (req, res) => {
     ReportInterface.find({ _id: req.params._id }, async (err, reports) => {
         if (err) {
