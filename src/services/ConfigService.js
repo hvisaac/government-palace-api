@@ -38,9 +38,13 @@ const getDepartments = async (req, res) => {
                 await new Promise(next => {
                     ReportInterface.find({ department: departments[i]._id }, (err, reports) => {
                         if (!err) {
+                            let pendingReports = 0;
                             let finishedsReports = 0;
                             let workingReports = 0;
                             for (const report of reports){
+                                if (report.status == 0) {
+                                    pendingReports++;
+                                }
                                 if (report.status == 1) {
                                     workingReports++; 
                                 }
@@ -55,6 +59,7 @@ const getDepartments = async (req, res) => {
                                 icon: departments[i].icon,
                                 href: departments[i].href,
                                 reports: reports.length,
+                                pendingReports: pendingReports,
                                 workingReports: workingReports,
                                 finishedsReports: finishedsReports
                             }

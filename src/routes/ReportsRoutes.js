@@ -7,7 +7,9 @@ const { getMyReports,
     getReportsByDate,
     getReportById,
     getReportsByContent,
-    changeStatus } = require('../services/ReportService');
+    changeStatus,
+    increaseReport,
+    confirmReport } = require('../services/ReportService');
 
 ReportsRouter.get('/my-reports/count-all-reports', countAllReports);
 ReportsRouter.get('/my-reports/:department', getMyReports);
@@ -17,5 +19,7 @@ ReportsRouter.post('/my-reports/get-by-date', getReportsByDate);
 ReportsRouter.get('/my-reports/get-by-id/:_id', getReportById);
 ReportsRouter.post('/my-reports/get-by-content', getReportsByContent);
 ReportsRouter.post('/my-reports/change-status', changeStatus);
+ReportsRouter.post('/my-reports/increase-report', increaseReport);
+ReportsRouter.post('/my-reports/confirm-report', confirmReport);
 
 module.exports = { ReportsRouter };

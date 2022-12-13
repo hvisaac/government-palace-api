@@ -6,10 +6,23 @@ const ReportSchema = new Schema({
     description: String,
     status: Number,
     photo: String,
+    finishedPhoto: {
+        type: String,
+        default: '',
+    },
     geolocation: {
         latitude: Number,
         longitude: Number,
     },
+    users: {
+        type: [String],
+        default: [],
+    },
+    count: {
+        type: Number,
+        default: 0,
+    },
+    folio: String,
     date: Date,
 }, {
     timestamps: true

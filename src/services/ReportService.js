@@ -1,45 +1,64 @@
 const ReportInterface = require('../interfaces/ReportInterface');
 const DepartmentInterface = require('../interfaces/DepartmentInterface');
+const { count } = require('../interfaces/ReportInterface');
 
 const confirmReport = async (req, res) => {
-    let exist = false;
 
-    let reports = new Promise((next) => {
-        ReportInterface.find({},
+    let matchReport;
+    const reports = await getReportsLocation(req.body.currentLat, req.body.currentLong);
+
+    for (const report of reports) {
+        const R = 6371; //earth radio
+        const sumLat = report.geolocation.latitude - req.body.currentLat;
+        const sumLong = report.geolocation.longitude - req.body.currentLong;
+        const a = Math.pow(Math.sin(sumLat / 2), 2) + (Math.cos(req.body.currentLat) * Math.cos(report.geolocation.latitude) * Math.pow(Math.sin(sumLong / 2), 2));
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const d = R * c;
+        console.log(R);
+        console.log(sumLat);
+        console.log(sumLong);
+        console.log(a);
+        console.log(c);
+        console.log(d);
+
+        if (d < 1 && report.department == req.body.department) {
+            matchReport = {
+                _id: report._id,
+            };
+            break;
+        }
+    }
+
+    return res.status(200).json(matchReport);
+}
+
+/**
+ * 
+ * @param {number} currentLat 
+ * @param {number} currentLong 
+ * @returns 
+ */
+function getReportsLocation(currentLat, currentLong) {
+    const response = new Promise((next) => {
+        ReportInterface.find(
             {
-                geolocation:
-                {
-                    latitude: {
-                        $gte: Number.parseFloat(req.body.lat2.substr(0, 4)),
-                        $lte: Number.parseFloat(req.body.lat2.substr(0, 4)) + 0.01
-                    },
-                    longitude: {
-                        $gte: Number.parseFloat(req.body.long2.substr(0, 5)),
-                        $lte: Number.parseFloat(req.body.long2.substr(0, 5)) + 0.01
-                    }
+                'geolocation.latitude': {
+                    $gte: currentLat.toFixed(2),
+                    $lte: (currentLat + 0.01).toFixed(2)
+                },
+                'geolocation.longitude': {
+                    $gte: (currentLong - 0.01).toFixed(2),
+                    $lte: currentLong.toFixed(2)
                 }
             },
+            { photo: 0 },
             (err, docs) => {
                 if (err) { next(err) }
                 else { next(docs) }
             })
     });
-    
-    for (const report of reports) {
-        const R = 6371; //earth radio
-        const sumLat = report.latitude - req.body.lat1;
-        const sumLong = report.longitude - req.body.long1;
-        const a = Math.pow(Math.sin(sumLat / 2), 2) + (Math.cos(req.body.lat1) * Math.cos(report.latitude) * Math.pow(Math.sin(sumLong / 2), 2));
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        const d = R * c;
 
-        if (d < 5) {
-            exist = true;
-            break;
-        }
-    }
-
-    return res.status(200).json(exist);
+    return response;
 }
 
 const getReportById = async (req, res) => {
@@ -176,7 +195,7 @@ const countAllReports = async (req, res) => {
 
 const getMyReports = async (req, res) => {
 
-    ReportInterface.find({ department: req.params.department }, { photo: 0 },async (err, reports) => {
+    ReportInterface.find({ department: req.params.department }, { photo: 0 }, async (err, reports) => {
         if (err) {
             console.log("error -> " + err);
             return res.status(500).json("internal error -> " + err);
@@ -205,7 +224,10 @@ const getMyReports = async (req, res) => {
 }
 
 const saveReport = async (req, res) => {
-    const newReport = new ReportInterface(req.body);
+
+    let report = req.body;
+    report['folio'] = await getFolio();
+    const newReport = new ReportInterface(report);
     await newReport.save((err, Object) => {
         if (err) {
             console.log("error -> " + err);
@@ -218,16 +240,68 @@ const saveReport = async (req, res) => {
 
 }
 
+function getFolio() {
+    const folio = new Promise((next) => {
+        ReportInterface.countDocuments({}, (err, count) => {
+            if (err) { console.log(err) }
+            else { 
+                const currentDdate = new Date();
+                const counter = count + 1;
+                let formatFolio = '';
+                if (counter < 10 && counter > 0) {
+                    formatFolio = '000' + counter;
+                }
+                if (counter >= 10) {
+                    formatFolio = '00' + counter;
+                }
+                if (counter >= 100) {
+                    formatFolio = '0' + counter;
+                }
+                console.log(formatFolio);
+                const year = currentDdate.getFullYear();
+                const month = currentDdate.getMonth();
+                const response = year.toString().substring(2) + month.toString() + formatFolio; 
+                next(response) 
+            }
+        });
+    });
+
+    return folio;
+}
+
 const changeStatus = (req, res) => {
     ReportInterface.findByIdAndUpdate(req.body._id, { status: req.body.status }, (err, Object) => {
         if (err) {
             console.log("error -> " + err);
             return res.status(500).json("internal error -> " + err);
-        }
-        else {
+        } else {
             return res.status(201).json(Object);
         }
     });
+}
+
+const increaseReport = (req, res) => {
+    if (req.body.userphone != '') {
+        ReportInterface.findByIdAndUpdate(req.body._id, { $push: { users: req.body.userphone }, $inc: { count: 1 } }, (err, docs) => {
+            if (err) {
+                console.log("error -> " + err);
+                return res.status(500).json("internal error -> " + err);
+            } else {
+                console.log(docs)
+                return res.status(201).json(docs);
+            }
+        });
+    } else {
+        ReportInterface.findByIdAndUpdate(req.body._id, { $inc: { count: 1 } }, (err, docs) => {
+            if (err) {
+                console.log("error -> " + err);
+                return res.status(500).json("internal error -> " + err);
+            } else {
+                console.log(docs)
+                return res.status(201).json(docs);
+            }
+        });
+    }
 }
 
 module.exports =
@@ -239,5 +313,7 @@ module.exports =
     getReportsByDate,
     getReportById,
     getReportsByContent,
-    changeStatus
+    changeStatus,
+    increaseReport,
+    confirmReport
 };
