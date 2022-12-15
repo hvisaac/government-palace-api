@@ -1,18 +1,107 @@
 const UserTypesInterface = require('../interfaces/UserTypesInterface');
 const DepartmentInterface = require('../interfaces/DepartmentInterface');
 const ReportInterface = require('../interfaces/ReportInterface');
+const servicePhonesInterface = require('../interfaces/ServicePhoneInterface');
+const ServicePhoneInterface = require('../interfaces/ServicePhoneInterface');
 
-const addUserTyoe = async (req, res) => {
+const getUserTypes = async (req, res) => {
+    UserTypesInterface.find({}, (err, types) => {
+        if (err) {
+            return res.status(500).json("internal error -> " + error);
+        } else {
+            return res.status(200).json(types);
+        }
+    }); 
+}
+
+const getUserType = async (req, res) => {
+    UserTypesInterface.find({_id: req.params._id}, (err, types) => {
+        if (err) {
+            console.log(err)
+            return res.status(500).json("internal error -> " + error);
+        } else {
+            console.log(types)
+            return res.status(200).json(types);
+        }
+    }); 
+}
+
+const getServicePhones = async (req, res) => {
+    console.log('entra')
+    servicePhonesInterface.find({}, (err, types) => {
+        if (err) {
+            return res.status(500).json("internal error -> " + err);
+        } else {
+            return res.status(200).json(types);
+        }
+    }); 
+}
+
+
+const addServicePhone = async (req, res) => {
 
     try {
         console.log("adding user");
-        const newUser = new UserTypesInterface(req.body);
-        await newUser.save();
+        const object = new ServicePhoneInterface(req.body);
+        await object.save();
         return res.status(201).json("success");
     } catch (error) {
         return res.status(500).json("internal error -> " + error);
     }
 }
+
+const updateServicePhone = async (req, res) => {
+    ServicePhoneInterface.findByIdAndUpdate(req.params.id, req.body, (err, docs) => {
+        if (err) {
+            return res.status(500).json("internal error -> " + err);
+        } else {
+            return res.status(200).json(docs);
+        }
+    });
+} 
+
+const deleteServicePhone = async (req, res) => {
+    ServicePhoneInterface.findByIdAndRemove(req.params.id, (err, docs) => {
+        if (err) {
+            return res.status(500).json("internal error -> " + err);
+        } else {
+            return res.status(200).json(docs);
+        }
+    });
+} 
+
+const addUserType = async (req, res) => {
+
+    try {
+        console.log("adding user type");
+        const newUser = new UserTypesInterface(req.body);
+        await newUser.save();
+        return res.status(201).json("success");
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json("internal error -> " + error);
+    }
+}
+
+const updateUserType = async (req, res) => {
+    UserTypesInterface.findByIdAndUpdate(req.params.id, req.body, (err, docs) => {
+        if (err) {
+            return res.status(500).json("internal error -> " + err);
+        } else {
+            return res.status(200).json(docs);
+        }
+    });
+} 
+
+const deleteUserType = async (req, res) => {
+    UserTypesInterface.findByIdAndRemove(req.params.id, (err, docs) => {
+        if (err) {
+            return res.status(500).json("internal error -> " + err);
+        } else {
+            return res.status(200).json(docs);
+        }
+    });
+} 
 
 const addDepartment = async (req, res) => {
 
@@ -25,6 +114,26 @@ const addDepartment = async (req, res) => {
         return res.status(500).json("internal error -> " + error);
     }
 }
+
+const updateDepartment = async (req, res) => {
+    DepartmentInterface.findByIdAndUpdate(req.params.id, req.body, (err, docs) => {
+        if (err) {
+            return res.status(500).json("internal error -> " + err);
+        } else {
+            return res.status(200).json(docs);
+        }
+    });
+} 
+
+const deleteDepartment = async (req, res) => {
+    DepartmentInterface.findByIdAndRemove(req.params.id, (err, docs) => {
+        if (err) {
+            return res.status(500).json("internal error -> " + err);
+        } else {
+            return res.status(200).json(docs);
+        }
+    });
+} 
 
 const getDepartments = async (req, res) => {
     DepartmentInterface.find({}, async (err, departments) => {
@@ -77,4 +186,18 @@ const getDepartments = async (req, res) => {
     )
 }
 
-module.exports = { addUserTyoe, addDepartment, getDepartments };
+module.exports = { 
+    addUserType, 
+    addDepartment, 
+    getDepartments, 
+    getUserTypes, 
+    getServicePhones, 
+    addServicePhone, 
+    getUserType,
+    updateDepartment,
+    updateServicePhone,
+    updateUserType,
+    deleteDepartment,
+    deleteServicePhone,
+    deleteUserType,
+ };

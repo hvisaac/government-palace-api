@@ -7,7 +7,8 @@ const UserSchema = new Schema({
     name: String,
     lastname: String,
     urlPhoto: String,
-    type: Number,
+    department: String,
+    role: String
 });
 
 module.exports = model('User', UserSchema);

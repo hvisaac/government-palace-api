@@ -51,7 +51,7 @@ function getReportsLocation(currentLat, currentLong) {
                     $lte: currentLong.toFixed(2)
                 }
             },
-            { photo: 0 },
+            { photo: 0, finishedPhoto: 0 },
             (err, docs) => {
                 if (err) { next(err) }
                 else { next(docs) }
@@ -92,7 +92,7 @@ const getReportById = async (req, res) => {
 
 const getAllReports = async (req, res) => {
 
-    ReportInterface.find({}, { photo: 0 }, async (err, reports) => {
+    ReportInterface.find({}, { photo: 0, finishedPhoto: 0 }, async (err, reports) => {
         if (err) {
             console.log("error -> " + err);
             return res.status(500).json("internal error -> " + err);
@@ -123,7 +123,7 @@ const getAllReports = async (req, res) => {
 
 const getReportsByContent = async (req, res) => {
 
-    ReportInterface.find({ description: { $regex: req.body.content } }, { photo: 0 }, async (err, reports) => {
+    ReportInterface.find({ description: { $regex: req.body.content } }, { photo: 0, finishedPhoto: 0 }, async (err, reports) => {
         if (err) {
             console.log("error -> " + err);
             return res.status(500).json("internal error -> " + err);
@@ -154,7 +154,7 @@ const getReportsByContent = async (req, res) => {
 
 const getReportsByDate = async (req, res) => {
 
-    ReportInterface.find({ createdAt: { $gte: req.body.beginDate, $lte: req.body.finalDate } }, { photo: 0 }, async (err, reports) => {
+    ReportInterface.find({ createdAt: { $gte: req.body.beginDate, $lte: req.body.finalDate } }, { photo: 0, finishedPhoto: 0 }, async (err, reports) => {
         if (err) {
             console.log("error -> " + err);
             return res.status(500).json("internal error -> " + err);
@@ -195,7 +195,7 @@ const countAllReports = async (req, res) => {
 
 const getMyReports = async (req, res) => {
 
-    ReportInterface.find({ department: req.params.department }, { photo: 0 }, async (err, reports) => {
+    ReportInterface.find({ department: req.params.department }, { photo: 0, finishedPhoto: 0 }, async (err, reports) => {
         if (err) {
             console.log("error -> " + err);
             return res.status(500).json("internal error -> " + err);
@@ -280,6 +280,17 @@ const changeStatus = (req, res) => {
     });
 }
 
+const finishReport = (req, res) => {
+    ReportInterface.findByIdAndUpdate(req.body._id, { status: 2, finishedPhoto: req.body.photo, finishedDescription: req.body.description }, (err, Object) => {
+        if (err) {
+            console.log("error -> " + err);
+            return res.status(500).json("internal error -> " + err);
+        } else {
+            return res.status(201).json(Object);
+        }
+    });
+}
+
 const increaseReport = (req, res) => {
     if (req.body.userphone != '') {
         ReportInterface.findByIdAndUpdate(req.body._id, { $push: { users: req.body.userphone }, $inc: { count: 1 } }, (err, docs) => {
@@ -315,5 +326,6 @@ module.exports =
     getReportsByContent,
     changeStatus,
     increaseReport,
-    confirmReport
+    confirmReport,
+    finishReport
 };

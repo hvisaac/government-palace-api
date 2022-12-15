@@ -1,10 +1,12 @@
 const { Schema, model } = require('mongoose');
 
 const UserTypesSchema = new Schema({
-    _id: String,
+    id: String,
     name: String,
-    readOnly: Boolean,
-    supersu: Boolean
+    canCreate: Boolean,
+    canEdit: Boolean,
+    canDelete: Boolean,
+    superUser: Boolean,
 });
 
 module.exports = model('UserTypes', UserTypesSchema);

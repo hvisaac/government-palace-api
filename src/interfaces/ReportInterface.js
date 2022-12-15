@@ -4,6 +4,10 @@ const ReportSchema = new Schema({
     id: String,
     department: String,
     description: String,
+    finishedDescription: {
+        type: String,
+        default: '',
+    },
     status: Number,
     photo: String,
     finishedPhoto: {
