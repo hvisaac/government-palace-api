@@ -15,10 +15,11 @@ const getUserTypes = async (req, res) => {
 }
 
 const getUserType = async (req, res) => {
+    console.log('entra')
     UserTypesInterface.find({_id: req.params._id}, (err, types) => {
         if (err) {
             console.log(err)
-            return res.status(500).json("internal error -> " + error);
+            return res.status(500).json("internal error -> " + err);
         } else {
             console.log(types)
             return res.status(200).json(types);
@@ -111,6 +112,7 @@ const addDepartment = async (req, res) => {
         await newDepartment.save();
         return res.status(201).json("success");
     } catch (error) {
+        console.log(error)
         return res.status(500).json("internal error -> " + error);
     }
 }

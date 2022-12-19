@@ -8,7 +8,12 @@ const UserSchema = new Schema({
     lastname: String,
     urlPhoto: String,
     department: String,
-    role: String
+    permissions: {
+        waitingStatus: Boolean,
+        workingStatus: Boolean,
+        finishStatus: Boolean,
+    },
+    hierarchy: String,
 });
 
 module.exports = model('User', UserSchema);

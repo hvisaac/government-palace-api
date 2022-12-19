@@ -4,6 +4,8 @@ const cors = require('cors')
 const { UserRouter } = require('./routes/UserRoutes');
 const { ConfigRouter } = require('./routes/ConfigRoutes');
 const { ReportsRouter } = require('./routes/ReportsRoutes');
+const { hierarchyRouter } = require('./routes/hierarchyRoutes');
+
 require('dotenv').config();
 require('./utils/config/Database');
 
@@ -17,7 +19,8 @@ app.use
     (
         UserRouter,
         ConfigRouter,
-        ReportsRouter
+        ReportsRouter,
+        hierarchyRouter
     );
 app.use(morgan('dev'));
 
