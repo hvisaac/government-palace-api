@@ -5,7 +5,7 @@ const ReportSchema = new Schema({
     name: String,
     color: String,
     icon: String,
-    reports: String
+    info: String
 });
 
 module.exports = model('departments', ReportSchema);
