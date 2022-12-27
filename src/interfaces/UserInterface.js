@@ -7,7 +7,7 @@ const UserSchema = new Schema({
     name: String,
     lastname: String,
     urlPhoto: String,
-    department: String,
+    departments: [String],
     permissions: {
         waitingStatus: Boolean,
         workingStatus: Boolean,

@@ -8,6 +8,5 @@ UserRouter.get('/users', getUsers);
 UserRouter.get('/users/:department', getUsersPerDepartment);
 UserRouter.delete('/users/:id/user', deleteUser);
 UserRouter.put('/users/:id/user', updateUser);
-UserRouter.put('/users/:id/user-and-password', changeUserAndPassword);
 
 module.exports = { UserRouter };

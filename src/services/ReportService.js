@@ -1,6 +1,5 @@
 const ReportInterface = require('../interfaces/ReportInterface');
 const DepartmentInterface = require('../interfaces/DepartmentInterface');
-const { count } = require('../interfaces/ReportInterface');
 
 const confirmReport = async (req, res) => {
 

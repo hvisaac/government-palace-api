@@ -15,20 +15,17 @@ const getUserTypes = async (req, res) => {
 }
 
 const getUserType = async (req, res) => {
-    console.log('entra')
     UserTypesInterface.find({_id: req.params._id}, (err, types) => {
         if (err) {
             console.log(err)
             return res.status(500).json("internal error -> " + err);
         } else {
-            console.log(types)
             return res.status(200).json(types);
         }
     }); 
 }
 
 const getServicePhones = async (req, res) => {
-    console.log('entra')
     servicePhonesInterface.find({}, (err, types) => {
         if (err) {
             return res.status(500).json("internal error -> " + err);
@@ -42,7 +39,6 @@ const getServicePhones = async (req, res) => {
 const addServicePhone = async (req, res) => {
 
     try {
-        console.log("adding user");
         const object = new ServicePhoneInterface(req.body);
         await object.save();
         return res.status(201).json("success");
@@ -74,7 +70,6 @@ const deleteServicePhone = async (req, res) => {
 const addUserType = async (req, res) => {
 
     try {
-        console.log("adding user type");
         const newUser = new UserTypesInterface(req.body);
         await newUser.save();
         return res.status(201).json("success");
@@ -107,7 +102,6 @@ const deleteUserType = async (req, res) => {
 const addDepartment = async (req, res) => {
 
     try {
-        console.log("adding department");
         const newDepartment = new DepartmentInterface(req.body);
         await newDepartment.save();
         return res.status(201).json("success");
@@ -172,7 +166,8 @@ const getDepartments = async (req, res) => {
                                 reports: reports.length,
                                 pendingReports: pendingReports,
                                 workingReports: workingReports,
-                                finishedsReports: finishedsReports
+                                finishedsReports: finishedsReports,
+                                info: departments[i].info
                             }
                             
                             response.push(auxDepartment);

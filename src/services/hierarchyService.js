@@ -1,13 +1,15 @@
 const hierarchyInterface = require('../interfaces/HierarchyInterface');
 
+
 const getHierarchies = async (req, res) => {
+    
     hierarchyInterface.find({}, (err, types) => {
         if (err) {
             return res.status(500).json("internal error -> " + error);
         } else {
             return res.status(200).json(types);
         }
-    }); 
+    });
 }
 
 const createHierarchy = async (req, res) => {

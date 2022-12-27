@@ -1,5 +1,6 @@
 const UserInterface = require('../interfaces/UserInterface');
 const HierarchyInterface = require('../interfaces/HierarchyInterface');
+const { response } = require('express');
 
 const signIn = async (req, res) => {
     console.log("Signing user");
@@ -9,25 +10,17 @@ const signIn = async (req, res) => {
             return res.status(500).json("internal error -> " + err);
         }
         else {
-            for (let i = 0; i < Object.keys(user).length; i++) {
-                await new Promise(next => {
-                    HierarchyInterface.find({ _id: user[i].hierarchy }, (err, hierarchy) => {
+            user[0].hierarchy = await new Promise(next => {
+                    HierarchyInterface.find({ _id: user[0].hierarchy }, (err, hierarchy) => {
                         if (!err) {
-                            const auxHierarchy = {
-                                _id: hierarchy[0]._id,
-                                name: hierarchy[0].name,
-                                level: hierarchy[0].level,
-                            }
-
-                            user[i].hierarchy = JSON.stringify(auxHierarchy);
+                            next(JSON.stringify(hierarchy[0]));
                         }
-                        next();
+                        
                     });
                 });
-            }
+            
+            return res.status(200).json(user);
         }
-        return res.status(200).json(user);
-
     });
 }
 
@@ -36,8 +29,9 @@ const signUp = async (req, res) => {
 
     try {
         console.log("adding user");
+        console.log(req.body)
         const newUser = new UserInterface(req.body);
-        await newUser.save();
+        await newUser.save().then(response => console.log(response));
         return res.status(201).json("success");
     } catch (error) {
         console.log("error -> " + error);
@@ -100,7 +94,6 @@ const getUsersPerDepartment = async (req, res) => {
             return res.status(500).json("internal error -> " + err);
         }
         else {
-            console.log(user);
             return res.status(200).json(user);
         }
     });
