@@ -8,7 +8,10 @@ const ReportSchema = new Schema({
         type: String,
         default: '',
     },
-    status: Number,
+    status: {
+        type: Number,
+        default: 0,
+    },
     photo: String,
     finishedPhoto: {
         type: String,

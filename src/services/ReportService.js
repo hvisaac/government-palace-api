@@ -5,6 +5,8 @@ const confirmReport = async (req, res) => {
 
     let matchReport;
     const reports = await getReportsLocation(req.body.currentLat, req.body.currentLong);
+    console.log('department -> ' + req.body.department);
+    console.log(reports);    
 
     for (const report of reports) {
         const R = 6371; //earth radio
@@ -38,22 +40,23 @@ const confirmReport = async (req, res) => {
  * @returns 
  */
 function getReportsLocation(currentLat, currentLong) {
+
     const response = new Promise((next) => {
         ReportInterface.find(
             {
                 'geolocation.latitude': {
-                    $gte: currentLat.toFixed(2),
-                    $lte: (currentLat + 0.01).toFixed(2)
+                    $gte: currentLat,
+                    $lte: currentLat + 0.01
                 },
                 'geolocation.longitude': {
-                    $gte: (currentLong - 0.01).toFixed(2),
-                    $lte: currentLong.toFixed(2)
+                    $gte: currentLong - 0.01,
+                    $lte: currentLong
                 }
             },
             { photo: 0, finishedPhoto: 0 },
             (err, docs) => {
-                if (err) { next(err) }
-                else { next(docs) }
+                if (err) { console.log(err); next(err) }
+                else { console.log(docs); next(docs) }
             })
     });
 
@@ -97,7 +100,6 @@ const getAllReports = async (req, res) => {
             return res.status(500).json("internal error -> " + err);
         }
         else {
-            console.log(reports);
             for (let i = 0; i < Object.keys(reports).length; i++) {
                 await new Promise(next => {
                     DepartmentInterface.find({ _id: reports[i].department }, (err, departments) => {
@@ -227,7 +229,8 @@ const saveReport = async (req, res) => {
     let report = req.body;
     report['folio'] = await getFolio();
     const newReport = new ReportInterface(report);
-    await newReport.save((err, Object) => {
+    console.log('body ---> ' + req.body)
+    newReport.save((err, Object) => {
         if (err) {
             console.log("error -> " + err);
             return res.status(500).json("internal error -> " + err);
@@ -256,7 +259,6 @@ function getFolio() {
                 if (counter >= 100) {
                     formatFolio = '0' + counter;
                 }
-                console.log(formatFolio);
                 const year = currentDdate.getFullYear();
                 const month = currentDdate.getMonth();
                 const response = year.toString().substring(2) + month.toString() + formatFolio; 
@@ -297,7 +299,6 @@ const increaseReport = (req, res) => {
                 console.log("error -> " + err);
                 return res.status(500).json("internal error -> " + err);
             } else {
-                console.log(docs)
                 return res.status(201).json(docs);
             }
         });
@@ -307,7 +308,6 @@ const increaseReport = (req, res) => {
                 console.log("error -> " + err);
                 return res.status(500).json("internal error -> " + err);
             } else {
-                console.log(docs)
                 return res.status(201).json(docs);
             }
         });
