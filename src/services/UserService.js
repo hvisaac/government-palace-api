@@ -10,7 +10,7 @@ const signIn = async (req, res) => {
             return res.status(500).json("internal error -> " + err);
         }
         else {
-            if (user) {
+            if (user[0] != undefined) {
                 user[0].hierarchy = await new Promise(next => {
                     HierarchyInterface.find({ _id: user[0].hierarchy }, (err, hierarchy) => {
                         if (!err) {
