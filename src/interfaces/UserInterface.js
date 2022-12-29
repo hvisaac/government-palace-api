@@ -16,4 +16,4 @@ const UserSchema = new Schema({
     hierarchy: String,
 });
 
-module.exports = model('User', UserSchema);
+module.exports = model('users', UserSchema);
