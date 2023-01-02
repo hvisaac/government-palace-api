@@ -314,6 +314,17 @@ const increaseReport = (req, res) => {
     }
 }
 
+
+const updateReport = async (req, res) => {
+    ReportInterface.findByIdAndUpdate(req.params.id, req.body, (err, docs) => {
+        if (err) {
+            return res.status(500).json("internal error -> " + err);
+        } else {
+            return res.status(200).json(docs);
+        }
+    });
+}
+
 module.exports =
 {
     getMyReports,
@@ -326,5 +337,6 @@ module.exports =
     changeStatus,
     increaseReport,
     confirmReport,
-    finishReport
+    finishReport,
+    updateReport
 };

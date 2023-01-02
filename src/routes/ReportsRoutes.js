@@ -10,7 +10,9 @@ const { getMyReports,
     changeStatus,
     increaseReport,
     confirmReport,
-    finishReport } = require('../services/ReportService');
+    finishReport,
+    updateReport
+} = require('../services/ReportService');
 
 ReportsRouter.get('/my-reports/count-all-reports', countAllReports);
 ReportsRouter.get('/my-reports/:department', getMyReports);
@@ -23,5 +25,6 @@ ReportsRouter.post('/my-reports/change-status', changeStatus);
 ReportsRouter.post('/my-reports/increase-report', increaseReport);
 ReportsRouter.post('/my-reports/confirm-report', confirmReport);
 ReportsRouter.post('/my-reports/finish-report', finishReport);
+ReportsRouter.put('/my-reports/:id/report', updateReport);
 
 module.exports = { ReportsRouter };

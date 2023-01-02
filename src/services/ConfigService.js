@@ -129,7 +129,7 @@ const deleteDepartment = async (req, res) => {
             return res.status(200).json(docs);
         }
     });
-} 
+}
 
 const getDepartments = async (req, res) => {
     DepartmentInterface.find({}, async (err, departments) => {
@@ -143,8 +143,6 @@ const getDepartments = async (req, res) => {
                 await new Promise(next => {
                     ReportInterface.find({ department: departments[i]._id }, (err, reports) => {
                         if (!err) {
-                            console.log(departments)
-                            console.log(reports)
                             let pendingReports = 0;
                             let finishedsReports = 0;
                             let workingReports = 0;
@@ -169,7 +167,8 @@ const getDepartments = async (req, res) => {
                                 pendingReports: pendingReports,
                                 workingReports: workingReports,
                                 finishedsReports: finishedsReports,
-                                info: departments[i].info
+                                info: departments[i].info,
+                                available: departments[i].available
                             }
                             
                             response.push(auxDepartment);

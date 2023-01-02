@@ -3,7 +3,6 @@ const HierarchyInterface = require('../interfaces/HierarchyInterface');
 const { response } = require('express');
 
 const signIn = async (req, res) => {
-    console.log("Signing user");
     UserInterface.find({ name: req.body.name, password: req.body.password }, async (err, user) => {
         if (err) {
             console.log("error -> " + err);
@@ -33,8 +32,6 @@ const signIn = async (req, res) => {
 const signUp = async (req, res) => {
 
     try {
-        console.log("adding user");
-        console.log(req.body)
         const newUser = new UserInterface(req.body);
         await newUser.save().then(response => console.log(response));
         return res.status(201).json("success");
@@ -45,6 +42,8 @@ const signUp = async (req, res) => {
 }
 
 const updateUser = async (req, res) => {
+    console.log(req.body);
+    console.log('updating...');
     UserInterface.findByIdAndUpdate(req.params.id, req.body, (err, docs) => {
         if (err) {
             return res.status(500).json("internal error -> " + err);

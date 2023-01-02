@@ -31,6 +31,10 @@ const ReportSchema = new Schema({
     },
     folio: String,
     date: Date,
+    available: {
+        type: Boolean,
+        default: true,
+    },
 }, {
     timestamps: true
 });

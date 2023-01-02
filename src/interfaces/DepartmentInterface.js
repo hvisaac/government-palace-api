@@ -5,7 +5,11 @@ const ReportSchema = new Schema({
     name: String,
     color: String,
     icon: String,
-    info: String
+    info: String,
+    available: {
+        type: Boolean,
+        default: true,
+    },
 });
 
 module.exports = model('departments', ReportSchema);
