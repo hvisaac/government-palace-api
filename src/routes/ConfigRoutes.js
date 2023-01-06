@@ -9,6 +9,10 @@ const {
     deleteServicePhone,
     updateDepartment,
     updateServicePhone,
+    addSecretariat,
+    updateSecretariat,
+    deleteSecretariat,
+    getSecretariats
 } = require('../services/ConfigService');
 
 ConfigRouter.post('/config/department', addDepartment);
@@ -19,5 +23,9 @@ ConfigRouter.delete('/config/:id/department', deleteDepartment);
 ConfigRouter.delete('/config/:id/service-phone', deleteServicePhone);
 ConfigRouter.put('/config/:id/department', updateDepartment);
 ConfigRouter.put('/config/:id/service-phone', updateServicePhone);
+ConfigRouter.post('/config/secretariat', addSecretariat);
+ConfigRouter.put('/config/:id/secretariat', updateSecretariat);
+ConfigRouter.delete('/config/:id/secretariat', deleteSecretariat);
+ConfigRouter.get('/config/secretariats', getSecretariats);
 
 module.exports = { ConfigRouter };

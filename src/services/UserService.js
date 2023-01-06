@@ -1,6 +1,5 @@
 const UserInterface = require('../interfaces/UserInterface');
 const HierarchyInterface = require('../interfaces/HierarchyInterface');
-const { response } = require('express');
 
 const signIn = async (req, res) => {
     UserInterface.find({ name: req.body.name, password: req.body.password }, async (err, user) => {
@@ -36,6 +35,9 @@ const signUp = async (req, res) => {
         await newUser.save().then(response => console.log(response));
         return res.status(201).json("success");
     } catch (error) {
+        if (error.code == 11000) {
+            return res.status(400).json("user exist in database");
+        }
         console.log("error -> " + error);
         return res.status(500).json("internal error -> " + error);
     }
