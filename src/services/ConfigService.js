@@ -265,6 +265,25 @@ const addSecretariat = async (req, res) => {
     }
 }
 
+function switchDepartments(idSecretariat, available) {
+    return new Promise((next) => {
+        DepartmentInterface.updateMany({ secretariat: idSecretariat }, { available: available }, (err, docs) => {
+            if (!err) {
+                next(docs)
+            }
+        })
+    });
+}
+
+const switchSecretariat = async (req, res) => {
+    SecretariatInterface.findByIdAndUpdate(req.params.id, { available: req.body.available }, async (err, docs) => {
+        if (!err) {
+            await switchDepartments(docs._id, req.body.available);
+            return res.status(200).json(docs);
+        }
+    });
+}
+
 const updateSecretariat = async (req, res) => {
     SecretariatInterface.findByIdAndUpdate(req.params.id, req.body, (err, docs) => {
         if (err) {
@@ -338,5 +357,6 @@ module.exports = {
     addSecretariat,
     updateSecretariat,
     deleteSecretariat,
-    getSecretariats
+    getSecretariats,
+    switchSecretariat
 };
