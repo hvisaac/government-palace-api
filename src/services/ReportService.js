@@ -1,12 +1,14 @@
 const ReportInterface = require('../interfaces/ReportInterface');
 const DepartmentInterface = require('../interfaces/DepartmentInterface');
+const fs = require('fs');
+const { savePhoto } = require('../utils/photoUtils');
 
 const confirmReport = async (req, res) => {
 
     let matchReport;
     const reports = await getReportsLocation(req.body.currentLat, req.body.currentLong);
     console.log('department -> ' + req.body.department);
-    console.log(reports);    
+    console.log(reports);
 
     for (const report of reports) {
         const R = 6371; //earth radio
@@ -25,6 +27,7 @@ const confirmReport = async (req, res) => {
         if (d < 1 && report.department == req.body.department) {
             matchReport = {
                 _id: report._id,
+                folio: report.folio
             };
             break;
         }
@@ -227,18 +230,38 @@ const getMyReports = async (req, res) => {
 const saveReport = async (req, res) => {
 
     let report = req.body;
+    const date = new Date();
     report['folio'] = await getFolio();
-    const newReport = new ReportInterface(report);
-    console.log('body ---> ' + req.body)
-    newReport.save((err, Object) => {
-        if (err) {
-            console.log("error -> " + err);
-            return res.status(500).json("internal error -> " + err);
-        }
-        else {
-            return res.status(201).json(Object);
-        }
+    const filePath = `reports/${date.getFullYear()}/${date.getMonth() + 1}/${report.folio}`;
+
+    await new Promise((next) => {
+        fs.mkdir(`src/public/${filePath}`, { recursive: true }, err => {
+            if (err) {
+                console.log(err);
+                next()
+            } else {
+                console.log('success')
+                next()
+            }
+        });
     });
+
+    if (await savePhoto(filePath, report.photo, 'reported')) {
+        report['photo'] = filePath;
+        const newReport = new ReportInterface(report);
+        newReport.save((err, Object) => {
+            if (err) {
+                console.log("error -> " + err);
+                return res.status(500).json("internal error -> " + err);
+            }
+            else {
+                return res.status(201).json(Object);
+            }
+        });
+    } else {
+        return res.status(500).json("internal error -> " + err);
+    }
+
 
 }
 
@@ -246,7 +269,7 @@ function getFolio() {
     const folio = new Promise((next) => {
         ReportInterface.countDocuments({}, (err, count) => {
             if (err) { console.log(err) }
-            else { 
+            else {
                 const currentDdate = new Date();
                 const counter = count + 1;
                 let formatFolio = '';
@@ -260,9 +283,14 @@ function getFolio() {
                     formatFolio = '0' + counter;
                 }
                 const year = currentDdate.getFullYear();
-                const month = currentDdate.getMonth();
-                const response = year.toString().substring(2) + month.toString() + formatFolio; 
-                next(response) 
+                let month;
+                if ((currentDdate.getMonth() + 1) < 10) {
+                    month = `0${currentDdate.getMonth() + 1}`;
+                } else {
+                    month = (currentDdate.getMonth() + 1).toString();
+                }
+                const response = year.toString().substring(2) + month + formatFolio;
+                next(response)
             }
         });
     });
@@ -281,15 +309,41 @@ const changeStatus = (req, res) => {
     });
 }
 
-const finishReport = (req, res) => {
-    ReportInterface.findByIdAndUpdate(req.body._id, { status: 2, finishedPhoto: req.body.photo, finishedDescription: req.body.description }, (err, Object) => {
-        if (err) {
-            console.log("error -> " + err);
-            return res.status(500).json("internal error -> " + err);
-        } else {
-            return res.status(201).json(Object);
-        }
+const finishReport = async (req, res) => {
+
+    const filePath = await new Promise((next) => {
+        ReportInterface.findById(req.body._id, (err, docs) => {
+            if (!err) {
+                next(docs.photo)
+            }
+        });
     });
+
+    await new Promise((next) => {
+        fs.mkdir(`src/public/${filePath}`, { recursive: true }, err => {
+            if (err) {
+                console.log(err);
+                next()
+            } else {
+                console.log('success')
+                next()
+            }
+        });
+    });
+
+    if (await savePhoto(filePath, req.body.photo, 'solved')) {
+        ReportInterface.findByIdAndUpdate(req.body._id, { status: 2, finishedDescription: req.body.description }, (err, Object) => {
+            if (err) {
+                console.log("error -> " + err);
+                return res.status(500).json("internal error -> " + err);
+            } else {
+                return res.status(201).json(Object);
+            }
+        });
+    } else {
+        return res.status(500).json("internal error -> " + err);
+    }
+
 }
 
 const increaseReport = (req, res) => {
@@ -338,5 +392,5 @@ module.exports =
     increaseReport,
     confirmReport,
     finishReport,
-    updateReport
+    updateReport,
 };

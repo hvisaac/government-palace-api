@@ -13,10 +13,6 @@ const ReportSchema = new Schema({
         default: 0,
     },
     photo: String,
-    finishedPhoto: {
-        type: String,
-        default: '',
-    },
     geolocation: {
         latitude: Number,
         longitude: Number,

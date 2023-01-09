@@ -11,7 +11,8 @@ const { getMyReports,
     increaseReport,
     confirmReport,
     finishReport,
-    updateReport
+    updateReport,
+    getImage
 } = require('../services/ReportService');
 
 ReportsRouter.get('/my-reports/count-all-reports', countAllReports);

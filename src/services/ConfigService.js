@@ -5,6 +5,7 @@ const servicePhonesInterface = require('../interfaces/ServicePhoneInterface');
 const ServicePhoneInterface = require('../interfaces/ServicePhoneInterface');
 const SecretariatInterface = require('../interfaces/SecretariatInterface');
 const UserInterface = require('../interfaces/UserInterface');
+const HierarchyInterface = require('../interfaces/HierarchyInterface');
 
 const getUserTypes = async (req, res) => {
     UserTypesInterface.find({}, (err, types) => {
@@ -318,24 +319,37 @@ const getSecretariats = async (req, res) => {
                     name: secretariat[i].name,
                     available: secretariat[i].available,
                     departments: await getDepartmentsBySecretariat(secretariat[i]._id),
-                    secretary: await getSecretary(secretariat[i]._id)
+                    secretary: await getSecretaries(secretariat[i]._id)
                 }
-
-
                 response.push(auxSecretariat);
             }
 
+            console.log(response[0])
             return res.status(200).json(response);
         }
     }
     )
 }
 
-function getSecretary(secretariat) {
+function getSecretaries(secretariat) {
     return new Promise((next) => {
-        UserInterface.find({ secretariat: secretariat }, (err, data) => {
-            console.log(secretariat)
-            if (!err) { next(data) }
+        UserInterface.find({ secretariat: secretariat }, async (err, data) => {
+            if (!err) {
+                for (let secretary of data) {
+                    secretary.hierarchy = await getHierarchy(secretary.hierarchy)
+                }
+                next(data)
+            }
+        })
+    });
+}
+
+function getHierarchy(id) {
+    return new Promise((next) => {
+        HierarchyInterface.find({ _id: id }, (err, data) => {
+            if (!err) {
+                next(JSON.stringify(data))
+            }
         })
     });
 }
