@@ -74,15 +74,12 @@ const getReportById = async (req, res) => {
             return res.status(500).json("internal error -> " + err);
         }
         else {
-            try {
-                const reportedImage = fs.readFileSync(`src/public/${reports[0].photo}/reported.png`, { encoding: 'base64' });
-                const solvedImage = fs.readFileSync(`src/public/${reports[0].photo}/solved.png`);
-                reports['reportedImage'] = reportedImage;
-                reports['solvedImage'] = solvedImage;
-            } catch (error) {
-                reports['reportedImage'] = '';
-                reports['solvedImage'] = '';
-            }
+            let response = reports[0];
+            const reportedImage = fs.readFileSync(`src/public/${reports[0].photo}/reported.png`, { encoding: 'base64' });
+            //const solvedImage = fs.readFileSync(`src/public/${reports[0].photo}/solved.png`, { encoding: 'base64' });
+            response.photo = `data:image/png;base64,${reportedImage}`;
+            //response.solvedImage = solvedImage;
+
             await new Promise(next => {
                 DepartmentInterface.find({ _id: reports[0].department }, (err, departments) => {
                     if (!err) {
@@ -92,14 +89,14 @@ const getReportById = async (req, res) => {
                             color: departments[0].color,
                             icon: departments[0].icon
                         }
-                        reports[0].department = JSON.stringify(auxDepartment);
+                        response.department = JSON.stringify(auxDepartment);
                     }
                     next();
                 });
             });
 
 
-            return res.status(200).json(reports);
+            return res.status(200).json(response);
         }
     });
 }
