@@ -351,7 +351,7 @@ const finishReport = async (req, res) => {
             }
         });
     } else {
-        return res.status(500).json("internal error -> " + err);
+        return res.status(500).json("internal error");
     }
 
 }
