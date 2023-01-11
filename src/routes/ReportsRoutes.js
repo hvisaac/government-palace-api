@@ -12,8 +12,8 @@ const { getMyReports,
     confirmReport,
     finishReport,
     updateReport,
-    getImage
 } = require('../services/ReportService');
+const { sendFinalizedMessage } = require('../services/WhatsAppService');
 
 ReportsRouter.get('/my-reports/count-all-reports', countAllReports);
 ReportsRouter.get('/my-reports/:department', getMyReports);

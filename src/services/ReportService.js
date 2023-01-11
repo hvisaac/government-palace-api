@@ -2,6 +2,7 @@ const ReportInterface = require('../interfaces/ReportInterface');
 const DepartmentInterface = require('../interfaces/DepartmentInterface');
 const fs = require('fs');
 const { savePhoto } = require('../utils/photoUtils');
+const { sendFinalizedMessage } = require('../services/WhatsAppService');
 
 const confirmReport = async (req, res) => {
 
@@ -73,22 +74,30 @@ const getReportById = async (req, res) => {
             return res.status(500).json("internal error -> " + err);
         }
         else {
-            for (let i = 0; i < Object.keys(reports).length; i++) {
-                await new Promise(next => {
-                    DepartmentInterface.find({ _id: reports[i].department }, (err, departments) => {
-                        if (!err) {
-                            const auxDepartment = {
-                                _id: departments[0]._id,
-                                name: departments[0].name,
-                                color: departments[0].color,
-                                icon: departments[0].icon
-                            }
-                            reports[i].department = JSON.stringify(auxDepartment);
-                        }
-                        next();
-                    });
-                });
+            try {
+                const reportedImage = fs.readFileSync(`src/public/${reports[0].photo}/reported.png`, { encoding: 'base64' });
+                const solvedImage = fs.readFileSync(`src/public/${reports[0].photo}/solved.png`);
+                reports['reportedImage'] = reportedImage;
+                reports['solvedImage'] = solvedImage;
+            } catch (error) {
+                reports['reportedImage'] = '';
+                reports['solvedImage'] = '';
             }
+            await new Promise(next => {
+                DepartmentInterface.find({ _id: reports[0].department }, (err, departments) => {
+                    if (!err) {
+                        const auxDepartment = {
+                            _id: departments[0]._id,
+                            name: departments[0].name,
+                            color: departments[0].color,
+                            icon: departments[0].icon
+                        }
+                        reports[0].department = JSON.stringify(auxDepartment);
+                    }
+                    next();
+                });
+            });
+
 
             return res.status(200).json(reports);
         }
@@ -332,11 +341,12 @@ const finishReport = async (req, res) => {
     });
 
     if (await savePhoto(filePath, req.body.photo, 'solved')) {
-        ReportInterface.findByIdAndUpdate(req.body._id, { status: 2, finishedDescription: req.body.description }, (err, Object) => {
+        ReportInterface.findByIdAndUpdate(req.body._id, { status: 2, finishedDescription: req.body.description }, async (err, Object) => {
             if (err) {
                 console.log("error -> " + err);
                 return res.status(500).json("internal error -> " + err);
             } else {
+                await sendFinalizedMessage(req.body.phones, `http://38.65.157.14:3000/${Object.photo}/solved.png`, req.body.description, Object.folio);
                 return res.status(201).json(Object);
             }
         });
