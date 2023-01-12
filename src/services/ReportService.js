@@ -265,7 +265,7 @@ const saveReport = async (req, res) => {
             }
         });
     } else {
-        return res.status(500).json("internal error"
+        return res.status(500).json("internal error")
     }
 
 
