@@ -1,7 +1,9 @@
+require('dotenv').config();
 const fetch = require('node-fetch');
-const auth_token = 'EAARAikDa21YBAFO68hKLZC87icUd6e0pPMbZBtFP5ybse5ZAqZBLtTAVrBlp3ESFzmZBnBmxG7seAvPTtarSUj9axSxLV4kzCYfESfUCltYgSR3GcMGGnhMC9QQdvHSNL2ukg7LltRoa8XSYGabm0idZCWx6kTVkXznORpFGkpG3pYZCoeWRscsGAd9KKfAGezxdVnjYReLqASx02wq288ZAZBA10nfMcZBJ0ZD';
+const { WhatsApp_Token } = process.env
 
 async function sendFinalizedMessage(phones, photo, description, folio) {
+    console.log(WhatsApp_Token)
     return await new Promise(async (resolve, reject) => {
         try {
 
@@ -12,7 +14,7 @@ async function sendFinalizedMessage(phones, photo, description, folio) {
                     to: `52${phone}`,
                     type: "template",
                     template: {
-                        name: "app_reportes_navojoa",
+                        name: "solved_report",
                         language: {
                             code: "es_MX"
                         },
@@ -49,7 +51,7 @@ async function sendFinalizedMessage(phones, photo, description, folio) {
                     fetch('https://graph.facebook.com/v15.0/103243179330911/messages',
                         {
                             method: 'POST',
-                            headers: { 'Authorization': `Bearer ${auth_token}`, 'content-type': 'application/json' },
+                            headers: { 'Authorization': `Bearer ${WhatsApp_Token}`, 'content-type': 'application/json' },
                             body: JSON.stringify(message)
                         }
                     ).then(response => {

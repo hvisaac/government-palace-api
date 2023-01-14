@@ -55,6 +55,10 @@ function getReportsLocation(currentLat, currentLong) {
                 'geolocation.longitude': {
                     $gte: currentLong - 0.01,
                     $lte: currentLong
+                },
+                status: {
+                    $gte: 0,
+                    $lte: 1
                 }
             },
             { photo: 0, finishedPhoto: 0 },

@@ -2,7 +2,7 @@ const UserInterface = require('../interfaces/UserInterface');
 const HierarchyInterface = require('../interfaces/HierarchyInterface');
 
 const signIn = async (req, res) => {
-    UserInterface.find({ name: req.body.name, password: req.body.password }, async (err, user) => {
+    UserInterface.find({ phone: req.body.phone, password: req.body.password }, async (err, user) => {
         if (err) {
             console.log("error -> " + err);
             return res.status(500).json("internal error -> " + err);
