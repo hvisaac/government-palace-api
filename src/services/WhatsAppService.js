@@ -14,7 +14,7 @@ async function sendFinalizedMessage(phones, photo, description, folio) {
                     to: `52${phone}`,
                     type: "template",
                     template: {
-                        name: "solved_report",
+                        name: "app_reportes_navojoa",
                         language: {
                             code: "es_MX"
                         },
