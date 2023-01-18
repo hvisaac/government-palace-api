@@ -78,11 +78,19 @@ const getReportById = async (req, res) => {
             return res.status(500).json("internal error -> " + err);
         }
         else {
-            let response = reports[0];
-            const reportedImage = fs.readFileSync(`src/public/${reports[0].photo}/reported.png`, { encoding: 'base64' });
-            //const solvedImage = fs.readFileSync(`src/public/${reports[0].photo}/solved.png`, { encoding: 'base64' });
-            response.photo = `data:image/png;base64,${reportedImage}`;
-            //response.solvedImage = solvedImage;
+            let reportedImage;
+            let solvedImage;
+            if (fs.existsSync(`src/public/${reports[0].photo}/reported.png`)) {
+                reportedImage = fs.readFileSync(`src/public/${reports[0].photo}/reported.png`, { encoding: 'base64' });
+            } else {
+                reportedImage = fs.readFileSync(`src/public/images/nodisponible.png`, { encoding: 'base64' });
+            }
+            if (fs.existsSync(`src/public/${reports[0].photo}/solved.png`)) {
+                solvedImage = fs.readFileSync(`src/public/${reports[0].photo}/solved.png`, { encoding: 'base64' });
+            } else {
+                solvedImage = fs.readFileSync(`src/public/images/nodisponible.png`, { encoding: 'base64' });
+            }
+
 
             await new Promise(next => {
                 DepartmentInterface.find({ _id: reports[0].department }, (err, departments) => {
@@ -93,12 +101,28 @@ const getReportById = async (req, res) => {
                             color: departments[0].color,
                             icon: departments[0].icon
                         }
-                        response.department = JSON.stringify(auxDepartment);
+                        reports[0].department = JSON.stringify(auxDepartment);
                     }
                     next();
                 });
             });
 
+            const response = {
+                department: reports[0].department,
+                description: reports[0].description,
+                finishedDescription: reports[0].finishedDescription,
+                status: reports[0].status,
+                photo: reports[0].photo,
+                geolocation: reports[0].geolocation,
+                users: reports[0].users,
+                count: reports[0].count,
+                folio: reports[0].folio,
+                available: reports[0].available,
+                createdAt: reports[0].createdAt,
+                updatedAt: reports[0].updatedAt,
+                reportedImage: `data:image/png;base64,${reportedImage}`,
+                solvedImage: `data:image/png;base64,${solvedImage}`,
+            }
 
             return res.status(200).json(response);
         }
@@ -243,21 +267,21 @@ const saveReport = async (req, res) => {
     const date = new Date();
     report['folio'] = await getFolio();
     const filePath = `reports/${date.getFullYear()}/${date.getMonth() + 1}/${report.folio}`;
-
     await new Promise((next) => {
         fs.mkdir(`src/public/${filePath}`, { recursive: true }, err => {
             if (err) {
                 console.log(err);
                 next()
             } else {
-                console.log('success')
+                console.log('created path')
                 next()
             }
         });
     });
 
-    if (await savePhoto(filePath, report.photo, 'reported')) {
+    if (req.body.photo == '') {
         report['photo'] = filePath;
+
         const newReport = new ReportInterface(report);
         newReport.save((err, Object) => {
             if (err) {
@@ -269,7 +293,22 @@ const saveReport = async (req, res) => {
             }
         });
     } else {
-        return res.status(500).json("internal error")
+        report['photo'] = filePath;
+
+        if (await savePhoto(filePath, report.photo, 'reported')) {
+            const newReport = new ReportInterface(report);
+            newReport.save((err, Object) => {
+                if (err) {
+                    console.log("error -> " + err);
+                    return res.status(500).json("internal error -> " + err);
+                }
+                else {
+                    return res.status(201).json(Object);
+                }
+            });
+        } else {
+            return res.status(500).json("internal error")
+        }
     }
 
 
@@ -321,38 +360,51 @@ const changeStatus = (req, res) => {
 
 const finishReport = async (req, res) => {
 
-    const filePath = await new Promise((next) => {
-        ReportInterface.findById(req.body._id, (err, docs) => {
-            if (!err) {
-                next(docs.photo)
-            }
-        });
-    });
-
-    await new Promise((next) => {
-        fs.mkdir(`src/public/${filePath}`, { recursive: true }, err => {
-            if (err) {
-                console.log(err);
-                next()
-            } else {
-                console.log('success')
-                next()
-            }
-        });
-    });
-
-    if (await savePhoto(filePath, req.body.photo, 'solved')) {
+    if (req.body.photo == null || req.body.photo == undefined || req.body.photo == "") {
         ReportInterface.findByIdAndUpdate(req.body._id, { status: 2, finishedDescription: req.body.description }, async (err, Object) => {
             if (err) {
                 console.log("error -> " + err);
                 return res.status(500).json("internal error -> " + err);
             } else {
-                await sendFinalizedMessage(req.body.phones, `http://38.65.157.14:3000/${Object.photo}/solved.png`, req.body.description, Object.folio);
+                await sendFinalizedMessage(req.body.phones, `http://38.65.157.14:3000/images/nodisponible.png`, req.body.description, Object.folio);
                 return res.status(201).json(Object);
             }
         });
     } else {
-        return res.status(500).json("internal error");
+
+        const filePath = await new Promise((next) => {
+            ReportInterface.findById(req.body._id, (err, docs) => {
+                if (!err) {
+                    next(docs.photo)
+                }
+            });
+        });
+
+        await new Promise((next) => {
+            fs.mkdir(`src/public/${filePath}`, { recursive: true }, err => {
+                if (err) {
+                    console.log(err);
+                    next()
+                } else {
+                    console.log('success')
+                    next()
+                }
+            });
+        });
+
+        if (await savePhoto(filePath, req.body.photo, 'solved')) {
+            ReportInterface.findByIdAndUpdate(req.body._id, { status: 2, finishedDescription: req.body.description }, async (err, Object) => {
+                if (err) {
+                    console.log("error -> " + err);
+                    return res.status(500).json("internal error -> " + err);
+                } else {
+                    await sendFinalizedMessage(req.body.phones, `http://38.65.157.14:3000/${Object.photo}/solved.png`, req.body.description, Object.folio);
+                    return res.status(201).json(Object);
+                }
+            });
+        } else {
+            return res.status(500).json("internal error");
+        }
     }
 
 }

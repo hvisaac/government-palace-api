@@ -3,7 +3,6 @@ const fetch = require('node-fetch');
 const { WhatsApp_Token } = process.env
 
 async function sendFinalizedMessage(phones, photo, description, folio) {
-    console.log(WhatsApp_Token)
     return await new Promise(async (resolve, reject) => {
         try {
 
