@@ -12,7 +12,13 @@ const ReportSchema = new Schema({
         type: Number,
         default: 0,
     },
-    photo: String,
+    media: {
+        type: Object,
+        default: {
+            reportedImage: '',
+            resolvedImage: ''
+        }
+    },
     geolocation: {
         latitude: Number,
         longitude: Number,
@@ -31,6 +37,19 @@ const ReportSchema = new Schema({
         type: Boolean,
         default: true,
     },
+    notes: {
+        type: [{
+            body: {
+                type: String,
+                default: ''
+            },
+            createdAt: {
+                type: Date,
+                default: Date.now
+            }
+        }],
+        default: []
+    }
 }, {
     timestamps: true
 });
