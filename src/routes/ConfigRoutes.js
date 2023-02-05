@@ -13,7 +13,8 @@ const {
     updateSecretariat,
     deleteSecretariat,
     getSecretariats,
-    switchSecretariat
+    switchSecretariat,
+    confirmPhone
 } = require('../services/ConfigService');
 
 ConfigRouter.post('/config/department', addDepartment);
@@ -29,5 +30,6 @@ ConfigRouter.put('/config/:id/secretariat', updateSecretariat);
 ConfigRouter.delete('/config/:id/secretariat', deleteSecretariat);
 ConfigRouter.get('/config/secretariats', getSecretariats);
 ConfigRouter.put('/config/:id/switch-secretariat', switchSecretariat);
+ConfigRouter.post('/config/confirm-phone', confirmPhone);
 
 module.exports = { ConfigRouter };

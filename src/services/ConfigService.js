@@ -6,6 +6,7 @@ const ServicePhoneInterface = require('../interfaces/ServicePhoneInterface');
 const SecretariatInterface = require('../interfaces/SecretariatInterface');
 const UserInterface = require('../interfaces/UserInterface');
 const HierarchyInterface = require('../interfaces/HierarchyInterface');
+const whatsappAppService = require('./WhatsAppService');
 
 const getUserTypes = async (req, res) => {
     UserTypesInterface.find({}, (err, types) => {
@@ -331,6 +332,17 @@ const getSecretariats = async (req, res) => {
     )
 }
 
+const confirmPhone = async (req, res) => {
+
+    const code = await whatsappAppService.confimationCode(req.body.phone, req.body.folio)
+
+    if(code) {
+        return res.status(200).json(code)
+    } else {
+        return res.status(404).json()
+    }
+}
+
 function getSecretaries(secretariat) {
     return new Promise((next) => {
         UserInterface.find({ secretariat: secretariat }, async (err, data) => {
@@ -372,5 +384,6 @@ module.exports = {
     updateSecretariat,
     deleteSecretariat,
     getSecretariats,
-    switchSecretariat
+    switchSecretariat,
+    confirmPhone
 };
