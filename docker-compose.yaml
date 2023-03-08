@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  api:
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - MongoDB_HOST=db
+      - MongoDB_DATABASE=MAYITO
+      - WhatsApp_Token=EAARAikDa21YBAN1xCu7aUh6ZCToHHIbxCf8Kv9iiyaqjg2SqN0Xa2Q3vmj73ZC6oWdcpOeg32u90XyMB1V8YViKznLL7s6mf0c9k4qjTO6TUnIyTEZCZAOkWZCdYc3ZBlVZBaG6gyCkH7DAocZAMNZB3WtpShBrfUW1FwlxFLuZCplQ23EfHk3QpcqVQrP6TVFZArN0l90c11LLAwZDZD
+      - password=mayito
+    build: .
+    links: 
+      - db
+  db:
+    image: mongo
+    ports: 
+      - "27017:27017"
+    

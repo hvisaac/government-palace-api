@@ -21,6 +21,9 @@ app.use
         ReportsRouter,
         hierarchyRouter
     );
+app.get('/', (req, res) => {
+    res.status(200).json(new Date())
+})
 
 app.listen(app.get('port'), () => {
     console.log('server on port: ', app.get('port'));
