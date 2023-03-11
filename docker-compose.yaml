@@ -1,19 +1,53 @@
 version: '3.8'
 services:
-  api:
+  api_prod:
     restart: always
     ports:
       - "3000:3000"
     environment:
-      - MongoDB_HOST=db
+      - MongoDB_HOST=db_prod
       - MongoDB_DATABASE=MAYITO
       - WhatsApp_Token=EAARAikDa21YBAN1xCu7aUh6ZCToHHIbxCf8Kv9iiyaqjg2SqN0Xa2Q3vmj73ZC6oWdcpOeg32u90XyMB1V8YViKznLL7s6mf0c9k4qjTO6TUnIyTEZCZAOkWZCdYc3ZBlVZBaG6gyCkH7DAocZAMNZB3WtpShBrfUW1FwlxFLuZCplQ23EfHk3QpcqVQrP6TVFZArN0l90c11LLAwZDZD
       - password=mayito
+      - environment=prod
     build: .
     links: 
-      - db
-  db:
-    image: mongo
+      - db_prod
+  api_qa:
+    restart: always
+    ports:
+      - "3001:3000"
+    environment:
+      - MongoDB_HOST=db_qa
+      - MongoDB_DATABASE=MAYITO
+      - WhatsApp_Token=EAARAikDa21YBAN1xCu7aUh6ZCToHHIbxCf8Kv9iiyaqjg2SqN0Xa2Q3vmj73ZC6oWdcpOeg32u90XyMB1V8YViKznLL7s6mf0c9k4qjTO6TUnIyTEZCZAOkWZCdYc3ZBlVZBaG6gyCkH7DAocZAMNZB3WtpShBrfUW1FwlxFLuZCplQ23EfHk3QpcqVQrP6TVFZArN0l90c11LLAwZDZD
+      - password=mayito
+      - environment=qa
+    build: .
+    links: 
+      - db_qa
+  api_dev:
+    restart: always
+    ports:
+      - "3002:3000"
+    environment:
+      - MongoDB_HOST=db_dev
+      - MongoDB_DATABASE=MAYITO
+      - WhatsApp_Token=EAARAikDa21YBAN1xCu7aUh6ZCToHHIbxCf8Kv9iiyaqjg2SqN0Xa2Q3vmj73ZC6oWdcpOeg32u90XyMB1V8YViKznLL7s6mf0c9k4qjTO6TUnIyTEZCZAOkWZCdYc3ZBlVZBaG6gyCkH7DAocZAMNZB3WtpShBrfUW1FwlxFLuZCplQ23EfHk3QpcqVQrP6TVFZArN0l90c11LLAwZDZD
+      - password=mayito
+      - environment=dev
+    build: .
+    links: 
+      - db_dev
+  db_prod:
+    image: mongo:4.4.6
     ports: 
       - "27017:27017"
-    
+  db_qa:
+    image: mongo:4.4.6
+    ports: 
+      - "27018:27017"
+  db_dev:
+    image: mongo:4.4.6
+    ports: 
+      - "27019:27017"

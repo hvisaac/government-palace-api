@@ -22,7 +22,10 @@ app.use
         hierarchyRouter
     );
 app.get('/', (req, res) => {
-    res.status(200).json(new Date())
+    const { environment } = process.env;
+    res.status(200).json({
+        ambiente: environment
+    })
 })
 
 app.listen(app.get('port'), () => {
