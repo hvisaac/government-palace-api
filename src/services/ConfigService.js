@@ -334,12 +334,11 @@ const getSecretariats = async (req, res) => {
 
 const confirmPhone = async (req, res) => {
 
-    const code = await whatsappAppService.confimationCode(req.body.phone, req.body.folio)
-
-    if(code) {
+    try {
+        const code = await whatsappAppService.confirmationCode(req.body.phone, req.body.folio)
         return res.status(200).json(code)
-    } else {
-        return res.status(404).json()
+    } catch (error) {
+        return res.status(404).json(error)
     }
 }
 

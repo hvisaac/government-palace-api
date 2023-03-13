@@ -357,8 +357,12 @@ const finishReport = async (req, res) => {
                 console.log("error -> " + err);
                 return res.status(500).json("internal error -> " + err);
             } else {
-                await sendFinalizedMessage(req.body.phones, `http://38.65.157.14:3000/images/nodisponible.png`, req.body.description, Object.folio);
-                return res.status(201).json(Object);
+                try {
+                    await sendFinalizedMessage(req.body.phones, `http://38.65.157.46:3000/images/nodisponible.png`, req.body.description, Object.folio);
+                    return res.status(201).json(Object);
+                } catch (error) {
+                    
+                }
             }
         });
     } else {
@@ -367,8 +371,12 @@ const finishReport = async (req, res) => {
                 console.log("error -> " + err);
                 return res.status(500).json("internal error -> " + err);
             } else {
-                await sendFinalizedMessage(req.body.phones, req.body.photo, req.body.description, Object.folio);
-                return res.status(201).json(Object);
+                try {
+                    await sendFinalizedMessage(req.body.phones, req.body.photo, req.body.description, Object.folio);
+                    return res.status(201).json(Object);
+                } catch (error) {
+                    
+                }
             }
         });
     }

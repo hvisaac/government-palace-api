@@ -9,7 +9,7 @@ function getRandomInt() {
     return Math.floor(Math.random() * 9).toString();
 }
 
-async function confimationCode(phone, folio) {
+async function confirmationCode(phone, folio) {
 
     const code = getRandomInt() + getRandomInt() + getRandomInt() + getRandomInt() + getRandomInt();
 
@@ -56,7 +56,6 @@ async function confimationCode(phone, folio) {
                     else reject(new Error(`Invalid status code: ${response.status}`))
                 }).catch(err => reject(err))
             });
-
 
             resolve(cryptoJS.AES.encrypt(code, password).toString())
         } catch (error) {
@@ -132,4 +131,4 @@ async function sendFinalizedMessage(phones, photo, description, folio) {
 }
 
 
-module.exports = { sendFinalizedMessage, confimationCode }
+module.exports = { sendFinalizedMessage, confirmationCode }
