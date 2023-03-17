@@ -151,65 +151,121 @@ const getAllReports = async (req, res) => {
 }
 
 const getReportsByContent = async (req, res) => {
-
-    ReportInterface.find({ description: { $regex: req.body.content } }, { photo: 0, finishedPhoto: 0 }, async (err, reports) => {
-        if (err) {
-            console.log("error -> " + err);
-            return res.status(500).json("internal error -> " + err);
-        }
-        else {
-            for (let i = 0; i < Object.keys(reports).length; i++) {
-                await new Promise(next => {
-                    DepartmentInterface.find({ _id: reports[i].department }, (err, departments) => {
-                        if (!err) {
-                            const auxDepartment = {
-                                _id: departments[0]._id,
-                                name: departments[0].name,
-                                color: departments[0].color,
-                                icon: departments[0].icon
-                            }
-
-                            reports[i].department = JSON.stringify(auxDepartment);
-                        }
-                        next();
-                    });
-                });
+    if (req.body.department == '') {
+        ReportInterface.find({ description: { $regex: req.body.content } }, { photo: 0, finishedPhoto: 0 }, async (err, reports) => {
+            if (err) {
+                console.log("error -> " + err);
+                return res.status(500).json("internal error -> " + err);
             }
-            return res.status(200).json(reports);
-        }
-    });
+            else {
+                for (let i = 0; i < Object.keys(reports).length; i++) {
+                    await new Promise(next => {
+                        DepartmentInterface.find({ _id: reports[i].department }, (err, departments) => {
+                            if (!err) {
+                                const auxDepartment = {
+                                    _id: departments[0]._id,
+                                    name: departments[0].name,
+                                    color: departments[0].color,
+                                    icon: departments[0].icon
+                                }
+
+                                reports[i].department = JSON.stringify(auxDepartment);
+                            }
+                            next();
+                        });
+                    });
+                }
+                return res.status(200).json(reports);
+            }
+        });
+    } else {
+        ReportInterface.find({ description: { $regex: req.body.content }, department: req.body.department }, { photo: 0, finishedPhoto: 0 }, async (err, reports) => {
+            if (err) {
+                console.log("error -> " + err);
+                return res.status(500).json("internal error -> " + err);
+            }
+            else {
+                for (let i = 0; i < Object.keys(reports).length; i++) {
+                    await new Promise(next => {
+                        DepartmentInterface.find({ _id: reports[i].department }, (err, departments) => {
+                            if (!err) {
+                                const auxDepartment = {
+                                    _id: departments[0]._id,
+                                    name: departments[0].name,
+                                    color: departments[0].color,
+                                    icon: departments[0].icon
+                                }
+
+                                reports[i].department = JSON.stringify(auxDepartment);
+                            }
+                            next();
+                        });
+                    });
+                }
+                return res.status(200).json(reports);
+            }
+        });
+    }
 }
 
 
 const getReportsByDate = async (req, res) => {
 
-    console.log(req.body)
-    ReportInterface.find({ createdAt: { $gte: req.body.beginDate, $lte: req.body.finalDate } }, async (err, reports) => {
-        if (err) {
-            console.log("error -> " + err);
-            return res.status(500).json("internal error -> " + err);
-        }
-        else {
-            for (let i = 0; i < Object.keys(reports).length; i++) {
-                await new Promise(next => {
-                    DepartmentInterface.find({ _id: reports[i].department }, (err, departments) => {
-                        if (!err) {
-                            const auxDepartment = {
-                                _id: departments[0]._id,
-                                name: departments[0].name,
-                                color: departments[0].color,
-                                icon: departments[0].icon
-                            }
-                            reports[i].department = JSON.stringify(auxDepartment);
-                        }
-                        next();
-                    });
-                });
+    if (req.body.department == '') {
+        ReportInterface.find({ createdAt: { $gte: req.body.beginDate, $lte: req.body.finalDate } }, async (err, reports) => {
+            if (err) {
+                console.log("error -> " + err);
+                return res.status(500).json("internal error -> " + err);
             }
+            else {
+                for (let i = 0; i < Object.keys(reports).length; i++) {
+                    await new Promise(next => {
+                        DepartmentInterface.find({ _id: reports[i].department }, (err, departments) => {
+                            if (!err) {
+                                const auxDepartment = {
+                                    _id: departments[0]._id,
+                                    name: departments[0].name,
+                                    color: departments[0].color,
+                                    icon: departments[0].icon
+                                }
+                                reports[i].department = JSON.stringify(auxDepartment);
+                            }
+                            next();
+                        });
+                    });
+                }
 
-            return res.status(200).json(reports);
-        }
-    });
+                return res.status(200).json(reports);
+            }
+        });
+    } else {
+        ReportInterface.find({ createdAt: { $gte: req.body.beginDate, $lte: req.body.finalDate }, department: req.body.department }, async (err, reports) => {
+            if (err) {
+                console.log("error -> " + err);
+                return res.status(500).json("internal error -> " + err);
+            }
+            else {
+                for (let i = 0; i < Object.keys(reports).length; i++) {
+                    await new Promise(next => {
+                        DepartmentInterface.find({ _id: reports[i].department }, (err, departments) => {
+                            if (!err) {
+                                const auxDepartment = {
+                                    _id: departments[0]._id,
+                                    name: departments[0].name,
+                                    color: departments[0].color,
+                                    icon: departments[0].icon
+                                }
+                                reports[i].department = JSON.stringify(auxDepartment);
+                            }
+                            next();
+                        });
+                    });
+                }
+
+                return res.status(200).json(reports);
+            }
+        });
+    }
 }
 
 const countAllReports = async (req, res) => {
@@ -361,7 +417,7 @@ const finishReport = async (req, res) => {
                     await sendFinalizedMessage(req.body.phones, `http://38.65.157.46:3000/images/nodisponible.png`, req.body.description, Object.folio);
                     return res.status(201).json(Object);
                 } catch (error) {
-                    
+
                 }
             }
         });
@@ -375,7 +431,7 @@ const finishReport = async (req, res) => {
                     await sendFinalizedMessage(req.body.phones, req.body.photo, req.body.description, Object.folio);
                     return res.status(201).json(Object);
                 } catch (error) {
-                    
+
                 }
             }
         });
